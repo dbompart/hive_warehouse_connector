@@ -42,5 +42,6 @@ if [ -r "$hive_site_llap" ] && [ -r "$beeline_site_llap" ]; then
     spark-shell --master yarn --conf spark.datasource.hive.warehouse.load.staging.dir=/tmp --conf spark.datasource.hive.warehouse.metastoreUri=$hive_metastore_uris --conf spark.hadoop.hive.llap.daemon.service.hosts=$hive_llap_daemon_service_hosts --conf spark.jars=$hwc_jar --conf spark.pyFiles=$hwc_pyfile --conf spark.security.credentials.hiveserver2.enabled=false --conf spark.sql.hive.hiveserver2.jdbc.url=$hive_jdbc_url --conf spark.sql.hive.zookeeper.quorum=$hive_zookeeper_quorum \n"
 
 else
-     echo $hive_site_llap" and/or "$beeline_site_llap" doesn't exist on this host, or the current user $(whoami) doesn't have access to the files"
+     echo $hive_site_llap" and/or "$beeline_site_llap" doesn't exist on this host, or the current user $(whoami) doesn't have access to the files\n"
+     echo "Try running this command as the root or hive user"
 fi
