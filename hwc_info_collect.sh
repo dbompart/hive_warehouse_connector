@@ -21,7 +21,6 @@ if [ -f "$hive_site_llap" ] && [ -f "$beeline_site_llap" ]; then
     hive_jdbc_url=$(grep "beeline.hs2.jdbc.url.llap" -A1 "$beeline_site_llap" |awk 'NR==2' | awk -F"[<|>]" '{print $3}')
     hive_jdbc_url_principal=$(grep "hive.server2.authentication.kerberos.principal" -A1 "$hive_site_llap" |awk 'NR==2' | awk -F"[<|>]" '{print $3}')
     hive_zookeeper_quorum=$(grep "hive.zookeeper.quorum" -A1 "$hive_site_llap" |awk 'NR==2' | awk -F"[<|>]" '{print $3}')
-    err_msg="-- This may not be the LLAP Host,  --"
 
     echo -e "Copy and paste the following as a bulk input in Ambari -> Spark2 -> Configs -> Advanced -> Custom spark2-hive-site-override (Bulk Property Add mode)\n"
     echo -e "spark.datasource.hive.warehouse.load.staging.dir=/tmp"
