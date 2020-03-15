@@ -30,9 +30,9 @@ chmod +x  hwc_info_collect.sh
 ./hwc_info_collect.sh
 ``` 
 
-# LDAP/AD Authentication
+# LDAP/AD Authentication
 
-## Pre-requisite, refer to Spark - HWC, The initial setup process.
+#### Pre-requisite, refer to Spark - HWC, The initial setup process.
 
 In an LDAP enabled authentication setup, the username and password will be passed in plaintext. The recommendation is to Kerberize the cluster, otherwise expect to see the username and password exposed in clear text amongst the logs.
 
@@ -44,4 +44,25 @@ Note: We’ll need to URL encode the password if it has a special character, for
 
 This method is not fully supported for Spark HWC integration.
 
-Kerberos Authentication
+# Kerberos Authentication
+
+# Livy2 - Example
+
+# Zeppelin - Examples
+
+### Spark Interpreter
+
+### Livy2 Interpreter
+
+### Pyspark Interpreter
+
+
+# Troubleshooting common errors
+
+### No LLAP instances
+
+### Failed to import
+
+#### Cannot run outside HS2
+
+#### Results no more than 1000
