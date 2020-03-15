@@ -6,7 +6,7 @@ The purpose of this repo is to provide quick examples and utililities to work on
 
 - HiveServer2Interactive (LLAP) installed, up and running.
 - Bash and Python interpreter available.
-- Ideally for connections using HTTP transport protocol, `hive.server2.thrift.http.cookie.auth.enabled` should be `true`.
+- Ideally for connections using HTTP transport protocol, in the Ambari -> Hive -> Configs, `hive.server2.thrift.http.cookie.auth.enabled` should be `true`.
 - Set hadoop.proxyuser.hive.hosts=*  in the Ambari -> HDFS -> Configs -> Custom core-site section. (core-site.xml), or mention at least the LLAP Hosts, HS2 Hosts and Spark client hosts separated by commas.
 
 Once the LLAP service is up and running, the next step for this setup requires the bellow properties to be configured in the Spark client:
