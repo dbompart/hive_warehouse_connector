@@ -23,7 +23,7 @@ if [ -r "$hive_site_llap" ] && [ -r "$beeline_site_llap" ]; then
     hive_jdbc_url_principal=$(grep "hive.server2.authentication.kerberos.principal" -A1 "$hive_site_llap" |awk 'NR==2' | awk -F"[<|>]" '{print $3}')
     hive_zookeeper_quorum=$(grep "hive.zookeeper.quorum" -A1 "$hive_site_llap" |awk 'NR==2' | awk -F"[<|>]" '{print $3}')
 
-    echo -e "Copy and paste the following list of properties in Ambari UI -> Spark2 -> Configs -> Advanced -> Custom spark2-hive-site-override (Bulk Property Add mode)\n"
+    echo -e "To apply this configuration cluster wide, copy and paste the following list of properties in Ambari UI -> Spark2 -> Configs -> Advanced -> Custom spark2-hive-site-override (Bulk Property Add mode)\n"
     echo -e "spark.datasource.hive.warehouse.load.staging.dir=/tmp"
     echo -e "spark.datasource.hive.warehouse.metastoreUri="$hive_metastore_uris
     echo -e "spark.hadoop.hive.llap.daemon.service.hosts="$hive_llap_daemon_service_hosts
@@ -35,11 +35,18 @@ if [ -r "$hive_site_llap" ] && [ -r "$beeline_site_llap" ]; then
     #If Kerberized:
     [ ! -z "$hive_jdbc_url_principal"] && echo -e "spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
 
+    echo -e "\n### Save and restart."
     echo -e "\nNote: In a kerberized environment the property spark.security.credentials.hiveserver2.enabled has to be set to TRUE for deploy-mode cluster, i.e.:\n spark-submit --conf spark.security.credentials.hiveserver2.enabled=true"
 
-    echo -e "\nFor a quick test before proceeding to configure this cluster wide, try the following command:\n
+    echo -e "\nIf you'd like to test this per job instead of cluster wide, then use the following command as an example:\n
 
-    spark-shell --master yarn --conf spark.datasource.hive.warehouse.load.staging.dir=/tmp --conf spark.datasource.hive.warehouse.metastoreUri=$hive_metastore_uris --conf spark.hadoop.hive.llap.daemon.service.hosts=$hive_llap_daemon_service_hosts --conf spark.jars=$hwc_jar --conf spark.pyFiles=$hwc_pyfile --conf spark.security.credentials.hiveserver2.enabled=false --conf spark.sql.hive.hiveserver2.jdbc.url=$hive_jdbc_url --conf spark.sql.hive.zookeeper.quorum=$hive_zookeeper_quorum \n"
+    spark-shell --master yarn --conf spark.datasource.hive.warehouse.load.staging.dir=/tmp --conf spark.datasource.hive.warehouse.metastoreUri=$hive_metastore_uris --conf spark.hadoop.hive.llap.daemon.service.hosts=$hive_llap_daemon_service_hosts --conf spark.jars=$hwc_jar --conf spark.pyFiles=$hwc_pyfile --conf spark.security.credentials.hiveserver2.enabled=false --conf spark.sql.hive.hiveserver2.jdbc.url=\"$hive_jdbc_url\" --conf spark.sql.hive.zookeeper.quorum=\"$hive_zookeeper_quorum\" \n"
+
+    echo -e "Once in the Scala REPL, run the following snippet example to test basic conectivity:\n"
+    echo -e "scala> import com.hortonworks.hwc.HiveWarehouseSession"
+    echo "scala> import com.hortonworks.hwc.HiveWarehouseSession._"
+    echo "scala> val hive = HiveWarehouseSession.session(spark).build()"
+    echo -e "scala> hive.showDatabases().show()\n"
 
 else
      echo -e $hive_site_llap" and/or "$beeline_site_llap" doesn't exist on this host, or the current user $(whoami) doesn't have access to the files\n"
