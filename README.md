@@ -1,12 +1,15 @@
 # Spark - HWC, The initial setup process
 
-This section corresponds to all those Spark Applications with Hive Integration on HDP 3.1.4
+The purpose of this repo is to provide quick examples and utililities to work on a Spark and Hive integration on HDP 3.1.4
 
 #### Prerequisites:
 
 - HiveServer2Interactive (LLAP) installed, up and running.
+- Bash and Python interpreter available.
+- Ideally for connections using HTTP transport protocol, `hive.server2.thrift.http.cookie.auth.enabled` should be `true`.
+- Set hadoop.proxyuser.hive.hosts=*  in the Ambari -> HDFS -> Configs -> Custom core-site section. (core-site.xml), or mention at least the LLAP Hosts, HS2 Hosts and Spark client hosts separated by commas.
 
-Initial setup requires the bellow properties to be configured:
+Once the LLAP service is up and running, the next step for this setup requires the bellow properties to be configured in the Spark client:
 
 ```
 spark.datasource.hive.warehouse.load.staging.dir=
@@ -20,9 +23,7 @@ spark.submit.pyFiles=
 spark.hadoop.hive.zookeeper.quorum=
 ```
 
-The above information can be manually collected as explained in our Cloudera official documentation: https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.4/integrating-hive/content/hive_configure_a_spark_hive_connection.html
-
-The following steps will help in collecting the standard information and avoid making mistakes during the copy and paste process of parameter values between HS2I and Spark:
+While the above information can be manually collected as explained in our [Cloudera official documentation](https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.4/integrating-hive/content/hive_configure_a_spark_hive_connection.html), the following steps will help in collecting the standard information and avoid making mistakes during the copy and paste process of parameter values between HS2I and Spark:
 
 Steps:
 
@@ -33,6 +34,10 @@ wget https://raw.githubusercontent.com/dbompart/hive_warehouse_connector/master/
 chmod +x  hwc_info_collect.sh
 ./hwc_info_collect.sh
 ``` 
+The above script will inmediatly provide enough information with regard to:
+1. The information to enable the Spark and Hive integration (HWConnector)
+2. A working spark-shell command to test initial connectivity
+3. A short how-to list all Databases in Hive, in scala.
 
 # LDAP/AD Authentication
 
@@ -170,29 +175,51 @@ livy.spark.hadoop.hive.zookeeper.quorum=
 Please note that compared to a regular `spark-shell`or `spark-submit`, this time we'll have to specify the filesystem scheme `file:///`, otherwise it'll try to reference a path on HDFS by default.
 
 
-### Spark2 Interpreter
+# Creating a Table with Dummy data in Hive
+For this specific task, we can expedite the table creation and dummy data ingest by referring to the [Cloudera's VideoKB](https://community.cloudera.com/t5/Customer/Video-KB-How-to-generate-Hive-Random-Data-based-on-input/ta-p/271204)
 
-### Pyspark Interpreter
+In the above link we'll find a Python script to create and load a table based on an input table schema, written by Pablo Junge. The script file is available in this github repo as well [HiveRandom.zip](https://github.com/dbompart/hive_warehouse_connector/blob/master/HiveRandom.zip "HiveRandom.zip")
 
+Another short bash script is available [show_create_cleaner.sh](https://github.com/dbompart/hive_warehouse_connector/blob/master/show_create_cleaner.sh "show_create_cleaner.sh"), and it can be used as:
+```
+wget https://raw.githubusercontent.com/dbompart/hive_warehouse_connector/master/show_create_cleaner.sh
+chmod +x  show_create_cleaner.sh
+./show_create_cleaner.sh show_create_table_output_file.txt
+```
 
-# Troubleshooting common errors
+This bash script is a quick cleaner, it will make the `Show create table`stmt output  re-usable in Hive or Spark by using `--clean` which will also remove the Table's Location and Table's Properties sections, i.e.:
 
-### Message: No LLAP instances found
+```
+./show_create_cleaner.sh show_create_table_output_file.txt --clean
+```
 
-### Message: error: object hortonworks is not a member of package com
-Solution: This usually means that either the either the HWC jar or zip files, were not successfully uploaded to the Spark classpath. We can confirm this by looking at the logs and searching for:
+# Common errors
+
+### No service instances found in registry
+Check again the configuration settings, specially the llap.daemon.service.hosts value and also the corresponding zNode which should be available and readable in from Zookeeper.
+
+### error: object hortonworks is not a member of package com
+This usually means that either the either the HWC jar or zip files, were not successfully uploaded to the Spark classpath. We can confirm this by looking at the logs and searching for:
 ```
 Uploading resource file:/usr/hdp/current/hive_warehouse_connector/hive-warehouse-connector-assembly-1.0.0.3.1.4.32-1.jar
 ```
 
-#### Message: Cannot run get splits outside HS2
-Solution: Add hive.fetch.task.conversion="more" To Custom hiveserver2-interactive section.
+#### Cannot run get splits outside HS2
+Add hive.fetch.task.conversion="more" To Custom hiveserver2-interactive section. And check the LLAP logs if needed.
 
-#### Behaviour: Results no more than 1000
-Solution: Follow the HWS API guide. This usually means that execute() method was used instead of executeQuery().
+#### Results no more than 1000
+Follow the HWS API guide. This usually means that execute() method was incorrectly used instead of executeQuery().
 
 #### "Blacklisted configuration values in session config: spark.master"
-Solution: In the `/etc/livy2/conf/spark-blacklist.conf` file on the Livy2 server host, reconfigure this file to allow/disallow for configurations to be modified. 
-     
+In the `/etc/livy2/conf/spark-blacklist.conf` file on the Livy2 server host, reconfigure this file to allow/disallow for configurations to be modified. 
+
+#### Unable to read HiveServer2 configs from ZooKeeper. Tried all existing HiveServer2 uris from ZooKeeper
+LLAP may not be up and running or there is a problem on reading its znode.
+  
+
+# Suggested documentation
+
+- [https://community.cloudera.com/t5/Community-Articles/Integrating-Apache-Hive-with-Apache-Spark-Hive-Warehouse/ta-p/249035](https://community.cloudera.com/t5/Community-Articles/Integrating-Apache-Hive-with-Apache-Spark-Hive-Warehouse/ta-p/249035)
+- [https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.4/integrating-hive/content/hive_hivewarehouseconnector_for_handling_apache_spark_data.html](https://docs.cloudera.com/HDPDocuments/HDP3/HDP-3.1.4/integrating-hive/content/hive_hivewarehouseconnector_for_handling_apache_spark_data.html)
 
 
