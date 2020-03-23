@@ -23,7 +23,7 @@ if [ -r "$hive_site_llap" ] && [ -r "$beeline_site_llap" ]; then
     hive_jdbc_url_principal=$(grep "hive.server2.authentication.kerberos.principal" -A1 "$hive_site_llap" |awk 'NR==2' | awk -F"[<|>]" '{print $3}')
     hive_zookeeper_quorum=$(grep "hive.zookeeper.quorum" -A1 "$hive_site_llap" |awk 'NR==2' | awk -F"[<|>]" '{print $3}')
 
-    echo -e "To apply this configuration cluster wide, copy and paste the following list of properties in Ambari UI -> Spark2 -> Configs -> Advanced -> Custom spark2-hive-site-override (Bulk Property Add mode)\n"
+    echo -e "To apply this configuration cluster wide, copy and paste the following list of properties in Ambari UI -> Spark2 -> Configs -> Advanced -> Custom spark2-defaults (Bulk Property Add mode)\n"
     echo -e "spark.datasource.hive.warehouse.load.staging.dir=/tmp"
     echo -e "spark.datasource.hive.warehouse.metastoreUri="$hive_metastore_uris
     echo -e "spark.hadoop.hive.llap.daemon.service.hosts="$hive_llap_daemon_service_hosts
