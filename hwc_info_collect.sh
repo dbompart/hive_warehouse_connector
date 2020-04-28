@@ -28,7 +28,7 @@ if [ -r "$hive_site_llap" ] && [ -r "$beeline_site_llap" ]; then
     echo -e "spark.datasource.hive.warehouse.metastoreUri="$hive_metastore_uris
     echo -e "spark.hadoop.hive.llap.daemon.service.hosts="$hive_llap_daemon_service_hosts
     echo -e "spark.jars="$hwc_jar
-    echo -e "spark.pyFiles="$hwc_pyfile
+    echo -e "spark.submit.pyFiles="$hwc_pyfile
     echo -e "spark.security.credentials.hiveserver2.enabled=false"
     echo -e "spark.sql.hive.hiveserver2.jdbc.url="$hive_jdbc_url
     echo -e "spark.sql.hive.zookeeper.quorum="$hive_zookeeper_quorum
@@ -40,7 +40,7 @@ if [ -r "$hive_site_llap" ] && [ -r "$beeline_site_llap" ]; then
 
     echo -e "\nIf you'd like to test this per job instead of cluster wide, then use the following command as an example:\n
 
-    spark-shell --master yarn --conf spark.datasource.hive.warehouse.load.staging.dir=/tmp --conf spark.datasource.hive.warehouse.metastoreUri=$hive_metastore_uris --conf spark.hadoop.hive.llap.daemon.service.hosts=$hive_llap_daemon_service_hosts --conf spark.jars=$hwc_jar --conf spark.pyFiles=$hwc_pyfile --conf spark.security.credentials.hiveserver2.enabled=false --conf spark.sql.hive.hiveserver2.jdbc.url=\"$hive_jdbc_url\" --conf spark.sql.hive.zookeeper.quorum=\"$hive_zookeeper_quorum\" \n"
+    spark-shell --master yarn --conf spark.datasource.hive.warehouse.load.staging.dir=/tmp --conf spark.datasource.hive.warehouse.metastoreUri=$hive_metastore_uris --conf spark.hadoop.hive.llap.daemon.service.hosts=$hive_llap_daemon_service_hosts --conf spark.jars=$hwc_jar --conf spark.submit.pyFiles=$hwc_pyfile --conf spark.security.credentials.hiveserver2.enabled=false --conf spark.sql.hive.hiveserver2.jdbc.url=\"$hive_jdbc_url\" --conf spark.sql.hive.zookeeper.quorum=\"$hive_zookeeper_quorum\" \n"
 
     echo -e "Once in the Scala REPL, run the following snippet example to test basic conectivity:\n"
     echo -e "scala> import com.hortonworks.hwc.HiveWarehouseSession"
