@@ -1,3 +1,6 @@
+
+# TO BE FIXED ---- NEEDS TO BE UPDATED FOR CDP 7.x
+
 # Spark - HiveWarehouseConnector Quick Setup
 
 The purpose of this repo is to provide quick examples and utililities to work on a Spark and Hive integration on HDP 3.1.4
