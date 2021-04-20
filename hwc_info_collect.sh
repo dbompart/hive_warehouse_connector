@@ -8,14 +8,14 @@ set -e
 ### 1) Spark Direct Reader (HWC):
 ### - Does not enforce Ranger Policies
 ### - Needs filesystem policies/acls.
-### 2) JDBC execution mode (HWC) 
+### 2) JDBC execution mode (HWC)
 ### - Enforce Ranger policies. Connects to HS2.
 ### - For small datasets. What is the small definition here?
 ### 3) Spark Native (No HWC):
 ### - Enforce Ranger Policies. Connects to HMS.
-### 
-### Note: How does the HMS-Ranger integration works? How is that applying when SparkNative is used, but not when SparkDirectReader is used, although both query the HMS? 
-### 
+###
+### Note: How does the HMS-Ranger integration works? How is that applying when SparkNative is used, but not when SparkDirectReader is used, although both query the HMS?
+###
 ### For Writing:
 ### 1) Using HWC API:
 ### - Enforces Ranger policies through HS2 on Managed tables.
@@ -46,7 +46,7 @@ if [ -r "$hive_site" ] && [ -r "$beeline_site" ]; then
     echo -e "spark.jars="$hwc_jar
     echo -e "spark.submit.pyFiles="$hwc_pyfile
     echo -e "spark.sql.hive.hiveserver2.jdbc.url="$hive_jdbc_url
-    [ ! -z "$hive_jdbc_url_principal"] && echo -e "spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
+    [ ! -z "$hive_jdbc_url_principal" ] && echo -e "spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
 
 
 	    echo -e "\nIf you'd like to test this per job instead of cluster wide, then use the following command as an example:\n
@@ -58,11 +58,11 @@ if [ -r "$hive_site" ] && [ -r "$beeline_site" ]; then
             --conf spark.sql.extensions=com.hortonworks.spark.sql.rule.Extensions \\
             --conf spark.kryo.registrator=com.qubole.spark.hiveacid.util.HiveAcidKyroRegistrator \\
             --conf spark.submit.pyFiles=$hwc_pyfile \\
-            --conf spark.sql.hive.hiveserver2.jdbc.url=$hive_jdbc_url \\
-            --conf spark.hadoop.hive.metastore.uris=$hive_metastore_uris \\ 
+            --conf spark.sql.hive.hiveserver2.jdbc.url=\"$hive_jdbc_url\" \\
+            --conf spark.hadoop.hive.metastore.uris=\"$hive_metastore_uris\" \\
             --conf spark.datasource.hive.warehouse.read.mode=DIRECT_READER_V1"
             [ ! -z "$hive_jdbc_url_principal" ] && echo -e "\nNote: Because kerberos is enabled, additionally add the Hive Principal, via --conf spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
-            
+
 
             echo -e "\nHow to spin up a Spark-Shell with JDBC Cluster/Executors mode (Client/Driver mode is not recommended)::
 
@@ -71,8 +71,8 @@ if [ -r "$hive_site" ] && [ -r "$beeline_site" ]; then
             --conf spark.sql.extensions=\"com.hortonworks.spark.sql.rule.Extensions\" \\
             --conf spark.kryo.registrator=com.qubole.spark.hiveacid.util.HiveAcidKyroRegistrator \\
             --conf spark.submit.pyFiles=$hwc_pyfile \\
-            --conf spark.sql.hive.hiveserver2.jdbc.url=\"$hive_jdbc_url\"
-            --conf spark.hadoop.hive.zookeeper.quorum=$hive_zookeeper_quorum \\
+            --conf spark.sql.hive.hiveserver2.jdbc.url=\"$hive_jdbc_url\" \\
+            --conf spark.hadoop.hive.zookeeper.quorum=\"$hive_zookeeper_quorum\" \\
             --conf spark.datasource.hive.warehouse.read.mode=JDBC_CLUSTER"
             [ ! -z "$hive_jdbc_url_principal" ] && echo -e "\nNote: Because kerberos is enabled, additionally add the Hive Principal, via --conf spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
 
@@ -81,7 +81,7 @@ if [ -r "$hive_site" ] && [ -r "$beeline_site" ]; then
 	    echo -e "scala> import com.hortonworks.hwc.HiveWarehouseSession._"
 	    echo -e "scala> val hive = HiveWarehouseSession.session(spark).build()"
 	    echo -e "scala> hive.showDatabases().show()\n"
-	    
+
             echo -e "\nNote: In a kerberized environment the property spark.security.credentials.hiveserver2.enabled has to be set to TRUE for Cluster mode, and FALSE for Client mode, i.e.:\n spark-submit --conf spark.security.credentials.hiveserver2.enabled=true/false"
 
 
