@@ -60,9 +60,8 @@ if [ -r "$hive_site" ] && [ -r "$beeline_site" ]; then
             --conf spark.submit.pyFiles=$hwc_pyfile \\
             --conf spark.sql.hive.hiveserver2.jdbc.url=$hive_jdbc_url \\
             --conf spark.hadoop.hive.metastore.uris=$hive_metastore_uris \\ 
-            --conf spark.datasource.hive.warehouse.read.mode=DIRECT_READER_V1
-	    "
-            [ ! -z "$hive_jdbc_url_principal"] && echo -e "\\ --conf spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
+            --conf spark.datasource.hive.warehouse.read.mode=DIRECT_READER_V1"
+            [ ! -z "$hive_jdbc_url_principal" ] && echo -e "\nNote: Because kerberos is enabled, additionally add the Hive Principal, via --conf spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
             
 
             echo -e "\nHow to spin up a Spark-Shell with JDBC Cluster/Executors mode (Client/Driver mode is not recommended)::
@@ -75,7 +74,7 @@ if [ -r "$hive_site" ] && [ -r "$beeline_site" ]; then
             --conf spark.sql.hive.hiveserver2.jdbc.url=\"$hive_jdbc_url\"
             --conf spark.hadoop.hive.zookeeper.quorum=$hive_zookeeper_quorum \\
             --conf spark.datasource.hive.warehouse.read.mode=JDBC_CLUSTER"
-	    [ ! -z "$hive_jdbc_url_principal"] && echo -e "\\ --conf spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
+            [ ! -z "$hive_jdbc_url_principal" ] && echo -e "\nNote: Because kerberos is enabled, additionally add the Hive Principal, via --conf spark.sql.hive.hiveserver2.jdbc.url.principal="$hive_jdbc_url_principal
 
 	    echo -e "\nOnce in the Scala REPL, run the following snippet code example to test basic conectivity:\n"
 	    echo -e "scala> import com.hortonworks.hwc.HiveWarehouseSession"
